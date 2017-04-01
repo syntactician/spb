@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+// const crpyto = require('crypto-js')
+
+const fs = require('fs')
+const https = require('http')
+const minimist = require('minimist')
+const request = require('request')
+
+const argv = minimist(process.argv.slice(2))
+
+const handleRequest = (req, res) => {
+  const path = req.url
+
+  if (path === '/crypto-js.js')
+    fs.createReadStream('crypto-js.js').pipe(res);
+  else if (path === '/f')
+    fs.createReadStream('form.html').pipe(res);
+  else if (path === '/main.js')
+    fs.createReadStream('main.js').pipe(res);
+  else
+    fs.createReadStream('/index.html').pipe(res);
+}
+
+const main = () => https
+  .createServer(handleRequest)
+  .listen(argv.p || 8000)
+
+main()
