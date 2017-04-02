@@ -1,4 +1,3 @@
-var salt = '';
 var el = document.getElementById("form");
 var sourceURL = document.URL.match(/https?:\/\/.*\/(.*)/)[1];
 
@@ -8,7 +7,7 @@ if (!sourceURL.match(/https?:\/\/.*/)) {
 
 function getCipherText (url) {
   xhr = new XMLHttpRequest();
-  xhr.open('GET', sourceURL, false);
+  xhr.open('GET', url, false);
   xhr.send();
 
   return xhr.responseText;
