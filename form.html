@@ -3,7 +3,7 @@
     <title>spb - Hello NSA</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
     <link rel="icon" type="image/png" href="assets/favicon_32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="assets/favicon_128.png" sizes="128x128">
@@ -39,6 +39,9 @@
     }
 
     function _fd(data) {
+        if (FormData.prototype.isPrototypeOf(data))
+            return data;
+
         var fd = new FormData();
 
         $.each(data, function(key, value) {
@@ -424,7 +427,7 @@ $(function() {
   <body>
     <div id="stash" class="hidden" aria-hidden="true">
       <div class="alert alert-info fade in" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&#215;</span></button>
       </div>
     </div>
 
@@ -462,8 +465,8 @@ $(function() {
               </button>
             </div>
             <div class="form-group">
-              <input id="file-input" class="sr-only" type="file">
-              <button id="file" type="submit" class="btn btn-default btn-block">
+              <input type="file" id="file-input" class="sr-only">
+              <button id="file" type="submit" class="btn btn-default btn-block" disabled>
                 Upload File
                 <span class="fa fa-spin fa-spinner hidden"></span>
               </button>
@@ -479,7 +482,7 @@ $(function() {
           <div class="col-xs-6 col-sm-6 form-inline form-group text-right">
             <div class="form-group">
               <div class="btn-group btn-block">
-                <input id="private" name="private" class="api-input hidden" value="" type="checkbox">
+                <input id="private" name="private" class="api-input hidden" type="checkbox" value="1">
                 <label for="private" class="btn btn-default btn-block">Private</label>
               </div>
             </div>
@@ -492,8 +495,8 @@ $(function() {
             <div class="form-group">
               <label for="sunset" class="sr-only">Expires</label>
               <div class="input-group" id="sunset">
-                <input class="form-control api-input" id="datetime" name="sunset" placeholder="Expires" type="text">
-                <input class="form-control api-input hidden ignore-disable" name="sunset" placeholder="Expires (seconds)" disabled="disabled" type="text">
+                <input type="text" class="form-control api-input" id="datetime" name="sunset" placeholder="Expires">
+                <input type="text" class="form-control api-input hidden ignore-disable" name="sunset" placeholder="Expires (seconds)" disabled>
                 <span id="swap" class="input-group-addon">
                   <span class="fa fa-calendar"></span>
                   <span class="fa fa-clock-o hidden"></span>
@@ -502,16 +505,16 @@ $(function() {
             </div>
             <div class="form-group">
               <label for="label" class="sr-only">Label</label>
-              <input id="label" class="form-control" placeholder="Label" type="text">
+              <input type="text" id="label" class="form-control" placeholder="Label" disabled>
             </div>
           </div>
 
           <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
             <div class="form-group">
               <div class="input-group">
-                <input id="pasteid" class="form-control" placeholder="paste ID">
+                <input id="pasteid" class="form-control" placeholder="paste ID" disabled>
                 <div class="input-group-btn">
-                  <button id="load" type="submit" class="btn btn-default" data-uri="#pasteid">Load
+                  <button id="load" type="submit" class="btn btn-default" data-uri="#pasteid" disabled>Load
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
                 </div>
@@ -522,15 +525,15 @@ $(function() {
           <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
             <div class="form-group">
               <div class="input-group">
-                <input id="uuid" class="form-control" placeholder="paste UUID">
+                <input id="uuid" class="form-control" placeholder="paste UUID" disabled>
                 <div class="input-group-btn">
-                  <button id="update" type="submit" class="btn btn-default" data-uri="#uuid" data-method="put">
+                  <button id="update" type="submit" class="btn btn-default" data-uri="#uuid" data-method="put" disabled>
                     Update
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
                 </div>
                 <div class="input-group-btn">
-                  <button id="delete" type="submit" class="btn btn-default" data-uri="#uuid" data-method="delete">
+                  <button id="delete" type="submit" class="btn btn-default" data-uri="#uuid" data-method="delete" disabled>
                     Delete
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
@@ -547,6 +550,5 @@ $(function() {
         </div>
       </footer>
     </div>
-
-
-</body></html>
+  </body>
+</html>
