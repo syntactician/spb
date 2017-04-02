@@ -162,8 +162,6 @@ var WWW = (function(undefined) {
 
         $('input').val('');
         $('textarea').val('');
-        $(':checkbox').parent()
-            .removeClass('active');
 
         $('#content').removeClass('hidden');
         $('#filename').addClass('hidden');
@@ -184,28 +182,21 @@ var WWW = (function(undefined) {
 
     function paste_data(content_only) {
 
-        var file, content,
-            fd = new FormData();
+        if (!$('#password').val()) {
+            return;
+        }
+
+        var content, fd = new FormData();
 
         // hmm, could support multiple file uploads at once
-        file = $('#file-input').prop('files')[0];
-        content = $('#content').val();
-
-        if (file !== undefined)
-            fd.append('content', file);
-        else
-            fd.append('content', content);
+        content = encrypt($('#content').val(), $('#password').val());
+        fd.append('content', content);
 
         if (content_only == true)
             return fd;
 
-        $('.api-input:checkbox').each(function() {
-            var value = + $(this).is(':checked'),
-                name = $(this).attr('name');
-
-            if (value)
-                fd.append(name, value);
-        })
+        /* always use private pastes */
+        fd.append('private', 1);
 
         $('.api-input:text:enabled').each(function() {
             var value = $(this).val(),
@@ -297,6 +288,10 @@ $(function() {
     var app = WWW();
 
     function paste_submit(event) {
+        if (!$('#password').val()) {
+            return;
+        }
+
         var e = $(event.target),
             fd = app.paste_data(),
             fn = api.paste[e.data('method')];
@@ -364,6 +359,11 @@ $(function() {
                 return $(uri).val();
             }
         }
+    });
+
+    $('#paste').addClass('disabled', true);
+    $('#password').keyup(function () {
+        $('#paste').removeClass('disabled', (this.value === ""));
     });
 
     $('#clear').click(function(event) {
@@ -444,7 +444,7 @@ $(function() {
           <div class="text-center">
             <h1 class="page-header"><a href="https://sptpb.pw/" target="_self">sptpb.pw</a></h1>
             <h3>A website to securely paste shit</h3>
-            <p class="lead small">Backed by <a href="https://ptpb.pw/">ptpb.pw</a>, thanks you</p>
+            <p class="lead small">Backed by <a href="https://ptpb.pw/f">ptpb.pw</a></p>
           </div>
         </div>
 
@@ -459,33 +459,23 @@ $(function() {
 
           <div class="col-xs-6 col-sm-6 form-inline form-group">
             <div class="form-group">
-              <button id="paste" type="submit" class="btn btn-primary btn-block" data-method="post">
-                Paste
-                <span class="fa fa-spin fa-spinner hidden"></span>
-              </button>
+              <div class="input-group">
+                <input id="password" class="form-control" placeholder="password" disabled>
+                <div class="input-group-btn">
+                  <button id="paste" type="submit" class="btn btn-primary btn-block" data-method="post">
+                    Paste
+                    <span class="fa fa-spin fa-spinner hidden"></span>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div class="form-group">
-              <input type="file" id="file-input" class="sr-only">
-              <button id="file" type="submit" class="btn btn-default btn-block" disabled>
-                Upload File
-                <span class="fa fa-spin fa-spinner hidden"></span>
-              </button>
-            </div>
-            <div class="form-group">
-              <button id="shorturl" type="submit" class="btn btn-default btn-block" formaction="/u">
-                Short URL
-                <span class="fa fa-spin fa-spinner hidden"></span>
-              </button>
-            </div>
+
+            <!-- id=file, type=submit continer div id=file-input -->
+            <!-- id=shorturl, type=submit formaction=/u continer div id=file-input -->
+
           </div>
 
           <div class="col-xs-6 col-sm-6 form-inline form-group text-right">
-            <div class="form-group">
-              <div class="btn-group btn-block">
-                <input id="private" name="private" class="api-input hidden" type="checkbox" value="1">
-                <label for="private" class="btn btn-default btn-block">Private</label>
-              </div>
-            </div>
             <div class="form-group">
               <button id="clear" type="reset" class="btn btn-default btn-block">Clear</button>
             </div>
