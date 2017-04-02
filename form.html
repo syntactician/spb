@@ -10,6 +10,7 @@
     <link rel="icon" type="image/png" href="assets/favicon_512.png" sizes="512x512">
 
     <link href="assets/pbs.css" type="text/css" rel="stylesheet">
+    <link href="assets/extra.css" type="text/css" rel="stylesheet">
     <link href="assets/bootstrap-datetimepicker.css" type="text/css" rel="stylesheet">
 
     <script src="assets/jquery-1.js"></script>
@@ -361,6 +362,36 @@ $(function() {
         }
     });
 
+    function getCipherText (url) {
+      xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false);
+      xhr.send();
+
+      return xhr.responseText;
+    }
+
+    app.clear();
+
+    var matches = document.URL.match(/https?:\/\/.*\/(.*)/);
+    if (matches[1].length > 0) {
+
+        var sourceURL = matches[1];
+
+        if (!sourceURL.match(/https?:\/\/.*/)) {
+          sourceURL = 'https://ptpb.pw/' + sourceURL;
+        }
+
+        var ciphertext = getCipherText(sourceURL);
+        $('#content').val(ciphertext);
+        $('#content').addClass('blurry-text');
+
+        var passwd = prompt("Enter password:", "");
+        $('#password').val(passwd);
+
+        $('#content').val(decrypt(ciphertext, passwd));
+        $('#content').removeClass('blurry-text');
+    }
+
     $('#paste').addClass('disabled', true);
     $('#password').keyup(function () {
         $('#paste').removeClass('disabled', (this.value === ""));
@@ -412,7 +443,6 @@ $(function() {
 
     // refresh on firefox doesn't clear form values, but does clear
     // element state; whut
-    app.clear();
 });
 </script>
 
@@ -444,7 +474,7 @@ $(function() {
           <div class="text-center">
             <h1 class="page-header"><a href="https://sptpb.pw/" target="_self">sptpb.pw</a></h1>
             <h3>A website to securely paste shit</h3>
-            <p class="lead small">Backed by <a href="https://ptpb.pw/f">ptpb.pw</a></p>
+            <p class="lead small">Built atop <a href="https://ptpb.pw/f">ptpb.pw</a>, thanks you</p>
           </div>
         </div>
 
