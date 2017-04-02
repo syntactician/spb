@@ -6,8 +6,6 @@
 
 `spb` a.k.a. "sleuthpaste" is the only totally secure, auditable, entirely open-source pastebin.
 
-![spb demo]
-
 ## How to run
 
 The server is started with `spb [port]`. If port is unspecified, defaults to 80.
