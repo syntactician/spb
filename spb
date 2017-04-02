@@ -9,21 +9,26 @@ const request = require('request')
 
 const argv = minimist(process.argv.slice(2))
 
-const handleRequest = (req, res) => {
+const handler = (req, res) => {
+  if (req.method === 'GET')
+    handleGET(req, res)
+  else
+    console.error('Unsupported verb ' + req.method)
+}
+
+const handleGET = (req, res) => {
   const path = req.url
 
-  if (path === '/crypto-js.js')
-    fs.createReadStream('crypto-js.js').pipe(res);
+  if (path.startsWith('/assets/'))
+    fs.createReadStream(path.slice(1)).pipe(res);
   else if (path === '/f')
     fs.createReadStream('form.html').pipe(res);
-  else if (path === '/main.js')
-    fs.createReadStream('main.js').pipe(res);
   else
-    fs.createReadStream('/index.html').pipe(res);
+    fs.createReadStream('index.html').pipe(res);
 }
 
 const main = () => https
-  .createServer(handleRequest)
+  .createServer(handler)
   .listen(argv.p || 8000)
 
 main()
