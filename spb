@@ -13,7 +13,7 @@ const handler = (req, res) => {
   if (path.startsWith('/assets/')) {
     fs.createReadStream(path.slice(1)).pipe(res)
   } else {
-    fs.createReadStream('form.html').pipe(res)
+    fs.createReadStream('index.html').pipe(res)
   }
 }
 
