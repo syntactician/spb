@@ -1,450 +1,33 @@
 <!DOCTYPE html>
-<html><head>
-    <title>spb - Hello NSA</title>
+<html>
+  <head>
+    <title>pb - Hello NSA</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
-    <link rel="icon" type="image/png" href="assets/favicon_32.png" sizes="32x32">
-    <link rel="icon" type="image/png" href="assets/favicon_128.png" sizes="128x128">
-    <link rel="icon" type="image/png" href="assets/favicon_512.png" sizes="512x512">
-
-    <link href="assets/pbs.css" type="text/css" rel="stylesheet">
-    <link href="assets/extra.css" type="text/css" rel="stylesheet">
-    <link href="assets/bootstrap-datetimepicker.css" type="text/css" rel="stylesheet">
-
-    <script src="assets/jquery-1.js"></script>
-    <script src="assets/bootstrap.js"></script>
-    <script src="assets/moment.js"></script>
-    <script src="assets/bootstrap-datetimepicker.js"></script>
-    <script src="assets/crypto-js.js"></script>
-    <script src="assets/algo.js"></script>
-
-    <script id="index-script">var API = (function(baseurl) {
-
-    // method, args, uri
-    function request(options) {
-        options = options || {};
-
-        var url = baseurl.concat(options.uri || '');
-
-        args = $.extend({
-            url: url,
-            contentType: false,
-            processData: false,
-            dataType: 'json',
-            type: options.method
-        }, options.args);
-
-        return $.ajax(args);
-    }
-
-    function _fd(data) {
-        if (FormData.prototype.isPrototypeOf(data))
-            return data;
-
-        var fd = new FormData();
-
-        $.each(data, function(key, value) {
-            fd.append(key, value);
-        });
-
-        return fd;
-    }
-
-    function get(uri) {
-        return request({
-            method: 'GET',
-            uri: uri,
-            args: {
-                dataType: 'text',
-                accepts: {
-                    text: "application/json",
-                }
-            }
-        });
-    }
-
-    function put(data, uri) {
-
-        return request({
-            method: 'PUT',
-            uri: uri,
-            args: {
-                data: _fd(data)
-            }
-        });
-    }
-
-    function post(data, uri) {
-
-        return request({
-            method: 'POST',
-            uri: uri,
-            args: {
-                data: _fd(data)
-            }
-        });
-    }
-
-    // paste
-
-    function paste_delete(uuid) {
-
-        return request({
-            method: 'DELETE',
-            uri: uuid
-        });
-    }
-
-    // url
-
-    function url_post(data) {
-
-        return post(data, 'u');
-    }
-
-    //
-
-    return {
-        paste: {
-            post: post,
-            put: put,
-            delete: paste_delete,
-            get: get,
-        },
-        url: {
-            post: url_post
-        },
-    }
-});
-
-
-var WWW = (function(undefined) {
-
-    function init_datetime() {
-        $('#datetime').datetimepicker({
-            icons: {
-                time: 'fa fa-clock-o',
-                date: 'fa fa-calendar',
-                up: 'fa fa-chevron-up',
-                down: 'fa fa-chevron-down',
-                previous: 'fa fa-chevron-left',
-                next: 'fa fa-chevron-right',
-                today: 'fa fa-compass',
-                clear: 'fa fa-trash',
-                close: 'fa fa-remove'
-            },
-        });
-    }
-
-    function alert_new() {
-
-        var alert = $('#stash').find('.alert').clone();
-        var target = $('#alert-col');
-
-        target.append(alert);
-
-        return { title: function (title, message, link) {
-            var title, strong;
-            if (link !== undefined) {
-
-                /* replace ciphertext link with a link to us to decrypt that ciphertext */
-                link = link.replace(/^https?:\/\/ptpb.pw\//, "http://sptpb.pw/?");
-
-                message = $('<a>')
-                .attr('href', link)
-                .text(message);
-            }
-
-            strong = $('<strong>').text(title);
-            title = $('<div>').append(strong).append(': ').append(message);
-
-            return alert.append(title);
-        }}
-    }
-
-    function clear() {
-
-        $('input').val('');
-        $('textarea').val('');
-
-        $('#content').removeClass('hidden');
-        $('#filename').addClass('hidden');
-        $('#content').removeClass('blurry-text');
-
-        $('input, button').not('.ignore-disable').prop('disabled', false);
-    }
-
-    function paste_data(content_only) {
-
-        if (!$('#password').val()) {
-            alert_new().title('error', 'cowardly refusing to encrypt with an empty password');
-            return;
-        }
-
-        var content, fd = new FormData();
-
-        /* do the encryption */
-        fd.append('content', encrypt($('#content').val(), $('#password').val()));
-
-        if (content_only == true)
-            return fd;
-
-        /* always use private pastes */
-        fd.append('private', 1);
-
-        $('.api-input:text:enabled').each(function() {
-            var value = $(this).val(),
-                name = $(this).attr('name');
-
-            if (value)
-                fd.append(name, value);
-        });
-
-        return fd;
-    }
-
-    var status_keys = ['status', 'uuid', 'sunset', 'error'];
-
-    function api_status(data) {
-
-        if (!Object.prototype.isPrototypeOf(data))
-            return;
-
-        var alert = alert_new();
-
-        $.each(status_keys, function(index, key) {
-            var title,
-                value = data[key];
-
-            if (value === undefined)
-                return;
-
-            if (key == 'status')
-                alert.title(key, value, data.url);
-            else
-                alert.title(key, value);
-        });
-    }
-
-    function set_uuid(data) {
-
-        var uuid = data.uuid;
-
-        if (uuid === undefined)
-            return;
-
-        $('#uuid').val(uuid);
-    }
-
-    function set_content(data, xhr) {
-
-        var ct = xhr.getResponseHeader('content-type')
-        if (ct.startsWith("text/")) {
-            $('#content').val(data);
-        } else {
-            alert_new().title('status', 'cowardly refusing to display C-T: ' + ct);
-        }
-    }
-
-    function url_data() {
-
-        return {
-            content: $('#content').val()
-        }
-    }
-
-    function swap_sunset() {
-        var sunset = $('#sunset'),
-            hidden = sunset.find('input, span.fa'),
-            visible = hidden.not('.hidden');
-
-        hidden.removeClass('hidden').prop('disabled', false);
-        visible.addClass('hidden').prop('disabled', true);
-    }
-
-    return {
-        alert_new: alert_new,
-        clear: clear,
-        paste_data: paste_data,
-        url_data: url_data,
-        api_status: api_status,
-        set_uuid: set_uuid,
-        set_content: set_content,
-        swap_sunset: swap_sunset,
-        init_datetime: init_datetime
-    };
-});
-
-$(function() {
-
-    var api = API('https://ptpb.pw/');
-    var app = WWW();
-
-    function paste_submit(event) {
-        if (!$('#password').val()) {
-            return;
-        }
-
-        var e = $(event.target),
-            fd = app.paste_data(),
-            fn = api.paste[e.data('method')];
-
-        return fn(fd, e.uri()).done(function(data) {
-            app.set_uuid(data);
-        });
-    }
-
-    function try_json(xhr) {
-        if (xhr.responseJSON !== undefined)
-            return xhr.responseJSON;
-        try {
-            return $.parseJSON(xhr.responseText);
-        } catch(err) {
-            return {}
-        }
-    }
-
-    var _xhr = $.ajaxSettings.xhr;
-    $.ajaxSettings.xhr = function() {
-        var res = _xhr();
-        res.upload.addEventListener('progress', function(event) {
-            $('.progress-bar').width(event.loaded / event.total * 100 + "%");
-        });
-        return res;
-    }
-
-    $.fn.extend({
-        click: function(fn) {
-            if (arguments.length == 0)
-                return $(this).trigger('click');
-	    $(this).on('click', function(event) {
-                event.preventDefault();
-                fn(event);
-                event.target.blur();
-            });
-        },
-        sclick: function(fn) {
-            $(this).click(function(event) {
-                var spinner = $(event.target).find('.fa-spinner'),
-                    progress = $('.progress');
-                spinner.removeClass('hidden');
-                progress.removeClass('hidden');
-
-                fn(event).always(function() {
-                    spinner.addClass('hidden');
-                    progress.addClass('hidden');
-                    $('.progress-bar').width('0%');
-                }).done(function(data) {
-                    app.api_status(data);
-                }).fail(function(xhr, status, error) {
-                    var s = try_json(xhr);
-                    console.log(xhr);
-                    s[status] = error;
-                    app.api_status(s);
-                });
-            });
-        },
-        uri: function(value) {
-            uri = $(this).data('uri');
-            if (uri !== undefined) {
-                if (arguments.length != 0)
-                    return $(uri).val(value);
-                return $(uri).val();
-            }
-        }
-    });
-
-    function getCipherText (url) {
-      xhr = new XMLHttpRequest();
-      xhr.open('GET', url, false);
-      xhr.send();
-
-      return xhr.responseText;
-    }
-
-    app.clear();
-
-    var qs_begin = document.URL.indexOf("?");
-    if (qs_begin != -1) {
-        var sourceURL = document.URL.slice(qs_begin + 1);
-        if (sourceURL.length) {
-
-            /* if ciphertext doesn't begin with http(s)://, assume ptpb.pw link */
-            if (!/^https?:\/\//.test(sourceURL)) {
-                sourceURL = "https://ptpb.pw/" + sourceURL;
-            }
-
-            /* download ciphertext */
-            var ciphertext = getCipherText(sourceURL);
-            $('#content').val(window.btoa(unescape(encodeURIComponent(ciphertext))));
-            $('#content').addClass('blurry-text');
-
-            var ok = false;
-            try {
-                var plaintext = decrypt(ciphertext, prompt("Enter password:", ""));
-                if (!plaintext.length) {
-                    throw true;
-                }
-                app.clear();
-                $('#content').val(plaintext);
-            } catch (e) {
-                app.clear();
-                app.alert_new().title('error', 'incorrect password');
-            }
-        }
-    }
-
-    $('#paste').addClass('disabled', true);
-    $('#password').keyup(function () {
-        $('#paste').removeClass('disabled', (this.value === ""));
-    });
-
-    $('#clear').click(function(event) {
-        app.clear();
-        $("#content").focus();
-    });
-
-    $('#paste').sclick(paste_submit);
-    $('#update').sclick(paste_submit);
-
-    $('#delete').sclick(function(event) {
-        var e = $(event.target)
-        return api.paste.delete(e.uri()).done(function(data) {
-            e.uri('');
-        });
-    });
-
-    $('#load').sclick(function(event) {
-        var e = $(event.target)
-        return api.paste.get(e.uri()).done(function(data, status, xhr) {
-            app.set_content(data, xhr);
-        });
-    });
-
-    $('#paste-form').submit(function(event) {
-        event.preventDefault();
-    });
-
-    $('#swap').click(app.swap_sunset);
-
-    app.init_datetime();
-});
-</script>
-
-    <style id="index-style">input[type=checkbox]:checked ~ label {
-    color: #333;
-    background-color: #E6E6E6;
-    border-color: #ADADAD;
-}
-
-</style>
+    <link rel="icon" type="image/png" href="/images/sptpb-32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/images/sptpb-128.png" sizes="128x128" />
+    <link rel="icon" type="image/png" href="/images/sptpb-512.png" sizes="512x512" />
+
+    <link href="//d34zelngniy2d8.cloudfront.net/static/css/pbs.css" type="text/css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" type="text/css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet">
+
+    <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
+
+    <script id="index-script" src="/js/index.js"></script>
+
+    <style id="index-style"></style>
   </head>
   <body>
     <div id="stash" class="hidden" aria-hidden="true">
       <div class="alert alert-info fade in" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&#215;</span></button>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
       </div>
     </div>
 
@@ -462,13 +45,9 @@ $(function() {
             <h1 class="page-header"><a href="http://sptpb.pw/" target="_self">sptpb.pw</a></h1>
             <h3>the only secure pastebin</h3>
             <p class="lead small">
-
-<a href="about.html">about</a>
-&bull;
-<a href="https://github.com/syntactician/spb">open source</a>
-&bull;
-built atop <a href="https://ptpb.pw">ptpb.pw</a>
-
+              <a href="about.html">about</a> &bull;
+              <a href="https://github.com/syntactician/spb">open source</a> &bull;
+              built atop <a href="https://ptpb.pw">ptpb.pw</a>
             </p>
           </div>
         </div>
@@ -485,12 +64,12 @@ built atop <a href="https://ptpb.pw">ptpb.pw</a>
           <div class="col-xs-6 col-sm-6 form-inline form-group">
             <div class="form-group">
               <div class="input-group">
-                <input id="password" class="form-control" placeholder="password" disabled>
+                <input id="password" class="form-control" placeholder="password" disabled="disabled">
                 <div class="input-group-btn">
-                  <button id="paste" type="submit" class="btn btn-primary btn-block" data-method="post">
-                    Paste
-                    <span class="fa fa-spin fa-spinner hidden"></span>
-                  </button>
+              <button id="paste" type="submit" class="btn btn-primary btn-block invert-disable disabled" data-method="post" disabled="disabled">
+                Paste
+                <span class="fa fa-spin fa-spinner hidden"></span>
+              </button>
                 </div>
               </div>
             </div>
@@ -508,7 +87,7 @@ built atop <a href="https://ptpb.pw">ptpb.pw</a>
               <label for="sunset" class="sr-only">Expires</label>
               <div class="input-group" id="sunset">
                 <input type="text" class="form-control api-input" id="datetime" name="sunset" placeholder="Expires">
-                <input type="text" class="form-control api-input hidden ignore-disable" name="sunset" placeholder="Expires (seconds)" disabled>
+                <input type="text" class="form-control api-input hidden ignore-disable" name="sunset" placeholder="Expires (seconds)" disabled="disabled">
                 <span id="swap" class="input-group-addon">
                   <span class="fa fa-calendar"></span>
                   <span class="fa fa-clock-o hidden"></span>
@@ -517,16 +96,16 @@ built atop <a href="https://ptpb.pw">ptpb.pw</a>
             </div>
             <div class="form-group">
               <label for="label" class="sr-only">Label</label>
-              <input type="text" id="label" class="form-control" placeholder="Label" disabled>
+              <input type="text" id="label" class="form-control" placeholder="Label" disabled="disabled">
             </div>
           </div>
 
           <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
             <div class="form-group">
               <div class="input-group">
-                <input id="pasteid" class="form-control" placeholder="paste ID" disabled>
+                <input id="pasteid" class="form-control" placeholder="paste ID" disabled="disabled">
                 <div class="input-group-btn">
-                  <button id="load" type="submit" class="btn btn-default" data-uri="#pasteid" disabled>Load
+                  <button id="load" type="submit" class="btn btn-default" data-uri="#pasteid" disabled="disabled">Load
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
                 </div>
@@ -537,15 +116,15 @@ built atop <a href="https://ptpb.pw">ptpb.pw</a>
           <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
             <div class="form-group">
               <div class="input-group">
-                <input id="uuid" class="form-control" placeholder="paste UUID" disabled>
+                <input id="uuid" class="form-control" placeholder="paste UUID" disabled="disabled">
                 <div class="input-group-btn">
-                  <button id="update" type="submit" class="btn btn-default" data-uri="#uuid" data-method="put" disabled>
+                  <button id="update" type="submit" class="btn btn-default" data-uri="#uuid" data-method="put" disabled="disabled">
                     Update
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
                 </div>
                 <div class="input-group-btn">
-                  <button id="delete" type="submit" class="btn btn-default" data-uri="#uuid" data-method="delete" disabled>
+                  <button id="delete" type="submit" class="btn btn-default" data-uri="#uuid" data-method="delete" disabled="disabled">
                     Delete
                     <span class="fa fa-spin fa-spinner hidden"></span>
                   </button>
@@ -558,7 +137,7 @@ built atop <a href="https://ptpb.pw">ptpb.pw</a>
 
       <footer class="footer">
         <div class="container">
-          <p class="text-muted text-center small">Send all complaints to <a href="https://github.com/syntactician/spb" target="_self">syntactician & qguv</a></p>
+          <p class="text-muted text-center small">Send all complaints to <a href="https://github.com/syntactician/spb" target="_blank">syntactician & qguv</a></p>
         </div>
       </footer>
     </div>
