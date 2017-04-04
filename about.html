@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>spb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <link rel="icon" type="image/png" href="images/sptpb-32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/sptpb-128.png" sizes="128x128" />
+    <link rel="icon" type="image/png" href="images/sptpb-512.png" sizes="512x512" />
+
+    <link href="//d34zelngniy2d8.cloudfront.net/static/css/pbs.css" type="text/css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <div class="document" id="pb">
+        <h1 class="title">spb</h1>
+        <p>
+
+<b>spb</b> encrypts and decrypts text on the internet. It can be used as a
+<b>s</b>ecure <b>p</b>aste <b>b</b>in atop
+<a href="https://ptpb.pw/">ptpb.pw</a>
+as a sort of secure layer into and out of pb. It is free and
+<a href="https://github.com/syntactician/spb">open source</a>;
+use and adapt it however you want.
+
+        </p>
+
+        <div class="section" id="contents">
+          <h1>contents</h1>
+          <div class="contents topic" id="id1">
+            <p class="topic-title first"></p>
+            <ul class="simple">
+              <li><a href="#encryption">encryption</a></li>
+              <li><a href="#decryption">decryption</a></li>
+              <li><a href="#method">method</a></li>
+              <li><a href="#regarding-trust">regarding trust</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section" id="encryption">
+          <h1><a>encryption</a></h1>
+          <p>
+
+spb can encrypt generic text contents
+<a href="#method">with a password</a>
+and post them to
+<a href="https://ptpb.pw/">ptpb.pw</a>.
+Simply use the
+<a href="http://sptpb.pw/">form</a>
+to enter text to encrypt and a desired password. The <b>created</b>
+link at the top of the page will prompt for a password to decrypt the
+contents. Give that link and the password to whoever needs to view
+the content.
+
+          </p>
+        </div>
+
+        <div class="section" id="decryption">
+          <h1><a>decryption</a></h1>
+          <p>
+
+spb can decrypt any plain text on the web encrypted by
+<a href="#method">our method</a>.
+If there's some encrypted text at some URL
+<tt class="docutils literal">xyz</tt>,
+then:
+<pre class="code literal-block">http://sptpb.pw/?<b>xyz</b></pre>
+will show the decrypted contents of
+<tt class="docutils literal">xyz</tt>
+after prompting for a password. If
+<tt class="docutils literal">xyz</tt>
+is not a valid URL, we assume it refers to the ID of a paste on
+<a href="https://ptpb.pw/">ptpb.pw</a>, e.g.
+<pre class="code literal-block">http://ptpb.pw/<b>xyz</b></pre>
+
+        </div>
+        <div class="section" id="method">
+          <h1><a>method</a></h1>
+          <p>
+
+spb symmetrically encrypts/decrypts text with the CryptoJS AES functions, which
+generate a 256-bit AES key from your password and some
+<a href="https://github.com/syntactician/spb/blob/master/assets/algo.js#L1">salt</a>
+we provide.
+
+We are also working on a command-line tool so that you may encrypt some plain
+text, paste that text anywhere on the web, and decrypt by visiting:
+<pre class="code literal-block">http://sptpb.pw/?<b>xyz</b></pre>
+where
+<tt class="docutils literal">xyz</tt>
+is the URL of the text.
+
+          </p>
+
+        <div class="section" id="regarding-trust">
+          <h1><a>regarding trust</a></h1>
+          <p>
+
+You don't need to trust us not to save your password somewhere. This site never
+has access to your password, as it is stored locally. The site fetches the
+cyphertext before you enter the password, so we can guarantee that neither the
+plaintext nor the password are sent back to any server. Don't believe it? Try
+this:
+
+<ol>
+<li>Go to <a href="http://sptpb.pw/?wcqg">this example encrypted paste</a>.</li>
+<li>Once the page is loaded but before you type a password, disable internet access.</li>
+<li>Enter the password&mdash;which is <b>truth</b>&mdash;and see that the text is decrypted (it's our README).</li>
+</ol>
+
+"But that's not the issue!" you say. "What if your server is compromised and
+some malicious code is sent instead?" That's a good point. If that's something
+you're concerned about, just download
+<a href="https://github.com/syntactician/spb">the spb source</a>,
+inspect it if you want, and visit index.html in a browser. This page will
+function identically to sptpb.pw, as the entire site is just a static form
+without dependencies. Obviously you need to have javascript enabled in your
+browser.
+
+          </p>
+          <p>
+
+<b>Still not convinced?</b> Read
+<a href="https://github.com/syntactician/spb">the code</a>.
+
+          </p>
+          <p>
+
+<b>Think you've found an exploit?</b>
+If you can <i>demonstrate</i> an exploit, please raise
+<a href="https://github.com/syntactician/spb/issues/new">an issue</a>
+on Github (or message the authors in private if it's really bad) and we'll
+address it!
+
+          </p>
+          <!-- run out the page so links to "method" put that section at the top
+               of the browser window -->
+          <div style="visibility:hidden;height:100vh;"></div>
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

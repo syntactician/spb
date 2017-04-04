@@ -125,10 +125,22 @@ var WWW = (function(undefined) {
 
         return { title: function (title, message, link) {
             var title, strong;
-            if (link !== undefined)
+            if (link !== undefined) {
+
+                /* replace ciphertext link to paste site with a link for us to decrypt that ciphertext */
+                ptpb_root = /^https?:\/\/ptpb.pw\//;
+
+                /* TODO: make it work with whichever pastebin provider was
+                 * provided as an argument to API() */
+                if (ptpb_root.test(link))
+                    link = link.replace(ptpb_root, "/?");
+                else
+                    link = "/?" + link;
+
                 message = $('<a>')
                 .attr('href', link)
                 .text(message);
+            }
 
             strong = $('<strong>').text(title);
             title = $('<div>').append(strong).append(': ').append(message);
@@ -141,50 +153,79 @@ var WWW = (function(undefined) {
 
         $('input').val('');
         $('textarea').val('');
-        $(':checkbox').parent()
-            .removeClass('active');
 
-        $('#content').removeClass('hidden');
+        $('#content').removeClass('hidden').removeClass('blurry-text');
         $('#filename').addClass('hidden');
 
-        $('input, button').not('.ignore-disable').prop('disabled', false);
+        $('input, button').not('.ignore-disable, .invert-disable').prop('disabled', false);
+        $('input, button').find('.invert-disable').prop('disabled', true).addClass('disabled');
     }
 
-    function select_file() {
+    var salt = "jbpksGUENnr4U5eKhQn2DY4w";
 
-        var filename = $('#file-input').prop('files')[0].name;
+    function encrypt(plaintext, pass) {
+        return CryptoJS.AES.encrypt(plaintext, pass + salt);
+    }
 
-        $('#content').addClass('hidden');
-        $('#filename').removeClass('hidden')
-            .children().text(filename);
+    function decrypt(ciphertext, pass) {
+        return CryptoJS.AES
+            .decrypt(ciphertext, pass + salt)
+            .toString(CryptoJS.enc.Utf8);
+    }
 
-        $('#shorturl').prop('disabled', true);
+    function get_ciphertext(url) {
+      xhr = new XMLHttpRequest();
+      xhr.open('GET', url, false);
+      xhr.send();
+
+      return xhr.responseText;
+    }
+
+    function decrypt_url(url) {
+
+        var ciphertext = get_ciphertext(url),
+            content_bg = window.btoa(unescape(encodeURIComponent(ciphertext)));
+
+        $('#content').val(content_bg).addClass('blurry-text');
+
+        try {
+            var plaintext = decrypt(ciphertext, prompt("Enter password:", ""));
+            if (!plaintext.length) {
+                throw true;
+            }
+            $('#content').val(plaintext).removeClass('blurry-text');
+        } catch (e) {
+            clear();
+            alert_new().title('error', 'incorrect password');
+        }
+    }
+
+    function get_qstr() {
+        var qs_begin = document.URL.indexOf("?");
+        if (qs_begin == -1)
+            return;
+        var qs =  document.URL.slice(qs_begin + 1);
+        if (qs.length)
+            return qs;
     }
 
     function paste_data(content_only) {
 
-        var file, content,
+        var content,
             fd = new FormData();
 
-        // hmm, could support multiple file uploads at once
-        file = $('#file-input').prop('files')[0];
-        content = $('#content').val();
+        if (!$('#password').val()) {
+            throw "cowardly refusing to encrypt with an empty password";
+        }
 
-        if (file !== undefined)
-            fd.append('content', file);
-        else
-            fd.append('content', content);
+        /* do the encryption */
+        fd.append('content', encrypt($('#content').val(), $('#password').val()));
 
         if (content_only == true)
             return fd;
 
-        $('.api-input:checkbox').each(function() {
-            var value = + $(this).is(':checked'),
-                name = $(this).attr('name');
-
-            if (value)
-                fd.append(name, value);
-        })
+        /* always use private pastes */
+        fd.append('private', 1);
 
         $('.api-input:text:enabled').each(function() {
             var value = $(this).val(),
@@ -257,9 +298,10 @@ var WWW = (function(undefined) {
     }
 
     return {
-        alert: alert,
+        alert_new: alert_new,
         clear: clear,
-        select_file: select_file,
+        decrypt_url: decrypt_url,
+        get_qstr: get_qstr,
         paste_data: paste_data,
         url_data: url_data,
         api_status: api_status,
@@ -276,9 +318,13 @@ $(function() {
     var app = WWW();
 
     function paste_submit(event) {
-        var e = $(event.target),
-            fd = app.paste_data(),
-            fn = api.paste[e.data('method')];
+        try {
+            var e = $(event.target),
+                fd = app.paste_data(),
+                fn = api.paste[e.data('method')];
+        } catch (e) {
+            alert_new().title('error', 'cowardly refusing to encrypt with an empty password');
+        }
 
         return fn(fd, e.uri()).done(function(data) {
             app.set_uuid(data);
@@ -345,23 +391,16 @@ $(function() {
         }
     });
 
+    $('#password').keyup(function () {
+        if (this.value)
+            $('#paste').removeClass('disabled').prop('disabled', false);
+        else
+            $('#paste').addClass('disabled').prop('disabled', true);
+    });
+
     $('#clear').click(function(event) {
         app.clear();
         $("#content").focus();
-    });
-
-    $('#file-input').change(function(event) {
-        app.select_file();
-    });
-
-    $('#file').click(function(event) {
-        $('#file-input').click();
-    });
-
-    $('#shorturl').sclick(function(event) {
-        var fd = app.url_data();
-
-        return api.url.post(fd);
     });
 
     $('#paste').sclick(paste_submit);
@@ -392,4 +431,13 @@ $(function() {
     // refresh on firefox doesn't clear form values, but does clear
     // element state; whut
     app.clear();
+
+    var plaintext_url = app.get_qstr();
+    if (plaintext_url) {
+        /* if ciphertext doesn't begin with http(s)://, assume ptpb.pw link */
+        if (!/^https?:\/\//.test(plaintext_url)) {
+            plaintext_url = "https://ptpb.pw/" + plaintext_url;
+        }
+        app.decrypt_url(plaintext_url);
+    }
 });

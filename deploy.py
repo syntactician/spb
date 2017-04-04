@@ -14,6 +14,8 @@ def main(index_html, index_js, index_css):
         script.text = f.read()
         del script.attrib['src']
 
+    tree.xpath("//link[@id='index-style-link']")[0].drop_tree()
+
     style, = tree.xpath("//style[@id='index-style']")
 
     with open(index_css) as f:
