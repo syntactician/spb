@@ -128,9 +128,14 @@ var WWW = (function(undefined) {
             if (link !== undefined) {
 
                 /* replace ciphertext link to paste site with a link for us to decrypt that ciphertext */
-                /* TODO: detect whether the link is with builtin paste provider
-                 * link = link.replace(/^https?:\/\/ptpb.pw\//, "/"); */
-                link = link.replace(/^[^:]+:\/\/[^\/]+\//, "/");
+                ptpb_root = /^https?:\/\/ptpb.pw\//;
+
+                /* TODO: make it work with whichever pastebin provider was
+                 * provided as an argument to API() */
+                if (ptpb_root.test(link))
+                    link = link.replace(ptpb_root, "/?");
+                else
+                    link = "/?" + link;
 
                 message = $('<a>')
                 .attr('href', link)
@@ -149,9 +154,8 @@ var WWW = (function(undefined) {
         $('input').val('');
         $('textarea').val('');
 
-        $('#content').removeClass('hidden');
+        $('#content').removeClass('hidden').removeClass('blurry-text');
         $('#filename').addClass('hidden');
-        $('#content').removeClass('blurry-text');
 
         $('input, button').not('.ignore-disable, .invert-disable').prop('disabled', false);
         $('input, button').find('.invert-disable').prop('disabled', true).addClass('disabled');
@@ -189,7 +193,7 @@ var WWW = (function(undefined) {
             if (!plaintext.length) {
                 throw true;
             }
-            $('#content').val(plaintext);
+            $('#content').val(plaintext).removeClass('blurry-text');
         } catch (e) {
             clear();
             alert_new().title('error', 'incorrect password');
@@ -211,8 +215,7 @@ var WWW = (function(undefined) {
             fd = new FormData();
 
         if (!$('#password').val()) {
-            alert_new().title('error', 'cowardly refusing to encrypt with an empty password');
-            return;
+            throw "cowardly refusing to encrypt with an empty password";
         }
 
         /* do the encryption */
@@ -315,13 +318,13 @@ $(function() {
     var app = WWW();
 
     function paste_submit(event) {
-        if (!$('#password').val()) {
-            return;
+        try {
+            var e = $(event.target),
+                fd = app.paste_data(),
+                fn = api.paste[e.data('method')];
+        } catch (e) {
+            alert_new().title('error', 'cowardly refusing to encrypt with an empty password');
         }
-
-        var e = $(event.target),
-            fd = app.paste_data(),
-            fn = api.paste[e.data('method')];
 
         return fn(fd, e.uri()).done(function(data) {
             app.set_uuid(data);

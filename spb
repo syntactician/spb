@@ -10,10 +10,12 @@ const port = process.argv.length > 2
 const handler = (req, res) => {
   const path = req.url
 
-  if (path.startsWith('/assets/')) {
+  if (path.startsWith('/js/') || path.startsWith('/css/') || path.startsWith('/images')) {
     fs.createReadStream(path.slice(1)).pipe(res)
+  } else if (path.startsWith('/about.html')) {
+    fs.createReadStream('about.html').pipe(res)
   } else {
-    fs.createReadStream('index.html').pipe(res)
+    fs.createReadStream('blob.html').pipe(res)
   }
 }
 

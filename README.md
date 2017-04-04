@@ -1,4 +1,4 @@
-![spb logo](https://raw.githubusercontent.com/syntactician/spb/fb8a5cbda1689d45366f289940251044bd110c73/assets/favicon_128.png)
+![spb logo](https://raw.githubusercontent.com/syntactician/spb/master/images/sptpb-128.png)
 
 ## spb or "sleuthpaste"
 
@@ -8,7 +8,17 @@
 
 ## How to run
 
-The server is started with `spb [port]`. If port is unspecified, defaults to 80.
+You can run this as several static files or a single static file.
+
+### Multiple static files
+
+Serve the source directory anywhere. A server is included, which requires only node: `spb [port]` (default: 80).
+
+### A single static file
+
+To run it statically, first get the lxml python package (2 or 3, it doesn't matter) with your package manager or with pip, then `make`. This creates a single file `static.html` with page javascript and CSS embedded. Host that wherever; maybe even as a paste!
+
+<hr />
 
 ## Inspiration
 
