@@ -391,6 +391,8 @@ $(function() {
         }
     });
 
+    $('h1.page-header a').text(document.domain).attr('href', '//' + document.domain);
+
     $('#password').keyup(function () {
         if (this.value)
             $('#paste').removeClass('disabled').prop('disabled', false);
