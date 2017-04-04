@@ -19,9 +19,9 @@
 
 <b>spb</b> encrypts and decrypts text on the internet. It can be used as a
 <b>s</b>ecure <b>p</b>aste <b>b</b>in atop
-<a href="https://ptpb.pw/">ptpb.pw</a>
+<a href="//ptpb.pw/">ptpb.pw</a>
 as a sort of secure layer into and out of pb. It is free and
-<a href="https://github.com/syntactician/spb">open source</a>;
+<a href="//github.com/syntactician/spb">open source</a>;
 use and adapt it however you want.
 
         </p>
@@ -46,9 +46,9 @@ use and adapt it however you want.
 spb can encrypt generic text contents
 <a href="#method">with a password</a>
 and post them to
-<a href="https://ptpb.pw/">ptpb.pw</a>.
+<a href="//ptpb.pw/">ptpb.pw</a>.
 Simply use the
-<a href="http://sptpb.pw/">form</a>
+<a href="//sptpb.pw/">form</a>
 to enter text to encrypt and a desired password. The <b>created</b>
 link at the top of the page will prompt for a password to decrypt the
 contents. Give that link and the password to whoever needs to view
@@ -66,14 +66,14 @@ spb can decrypt any plain text on the web encrypted by
 If there's some encrypted text at some URL
 <tt class="docutils literal">xyz</tt>,
 then:
-<pre class="code literal-block">http://sptpb.pw/?<b>xyz</b></pre>
+<pre class="code literal-block">https://sptpb.pw/?<b>xyz</b></pre>
 will show the decrypted contents of
 <tt class="docutils literal">xyz</tt>
 after prompting for a password. If
 <tt class="docutils literal">xyz</tt>
 is not a valid URL, we assume it refers to the ID of a paste on
-<a href="https://ptpb.pw/">ptpb.pw</a>, e.g.
-<pre class="code literal-block">http://ptpb.pw/<b>xyz</b></pre>
+<a href="//ptpb.pw/">ptpb.pw</a>, e.g.
+<pre class="code literal-block">https://ptpb.pw/<b>xyz</b></pre>
 
         </div>
         <div class="section" id="method">
@@ -82,12 +82,12 @@ is not a valid URL, we assume it refers to the ID of a paste on
 
 spb symmetrically encrypts/decrypts text with the CryptoJS AES functions, which
 generate a 256-bit AES key from your password and some
-<a href="https://github.com/syntactician/spb/blob/master/assets/algo.js#L1">salt</a>
+<a href="//github.com/syntactician/spb/blob/master/assets/algo.js#L1">salt</a>
 we provide.
 
 We are also working on a command-line tool so that you may encrypt some plain
 text, paste that text anywhere on the web, and decrypt by visiting:
-<pre class="code literal-block">http://sptpb.pw/?<b>xyz</b></pre>
+<pre class="code literal-block">https://sptpb.pw/?<b>xyz</b></pre>
 where
 <tt class="docutils literal">xyz</tt>
 is the URL of the text.
@@ -105,7 +105,7 @@ plaintext nor the password are sent back to any server. Don't believe it? Try
 this:
 
 <ol>
-<li>Go to <a href="http://sptpb.pw/?wcqg">this example encrypted paste</a>.</li>
+<li>Go to <a href="//sptpb.pw/?wcqg">this example encrypted paste</a>.</li>
 <li>Once the page is loaded but before you type a password, disable internet access.</li>
 <li>Enter the password&mdash;which is <b>truth</b>&mdash;and see that the text is decrypted (it's our README).</li>
 </ol>
@@ -113,7 +113,7 @@ this:
 "But that's not the issue!" you say. "What if your server is compromised and
 some malicious code is sent instead?" That's a good point. If that's something
 you're concerned about, just download
-<a href="https://github.com/syntactician/spb">the spb source</a>,
+<a href="//github.com/syntactician/spb">the spb source</a>,
 inspect it if you want, and visit index.html in a browser. This page will
 function identically to sptpb.pw, as the entire site is just a static form
 without dependencies. Obviously you need to have javascript enabled in your
@@ -123,14 +123,14 @@ browser.
           <p>
 
 <b>Still not convinced?</b> Read
-<a href="https://github.com/syntactician/spb">the code</a>.
+<a href="//github.com/syntactician/spb">the code</a>.
 
           </p>
           <p>
 
 <b>Think you've found an exploit?</b>
 If you can <i>demonstrate</i> an exploit, please raise
-<a href="https://github.com/syntactician/spb/issues/new">an issue</a>
+<a href="//github.com/syntactician/spb/issues/new">an issue</a>
 on Github (or message the authors in private if it's really bad) and we'll
 address it!
 
