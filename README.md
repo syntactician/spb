@@ -2,60 +2,39 @@
 
 ## spb or "sleuthpaste"
 
-...or how I learned to stop worrying about pasting sensitive information publicly and love the Web.
+the only totally secure, fully auditable, entirely open-source pastebin, by [@syntactician](https://github.com/syntactician) and [@qguv](https://github.com/qguv)
 
-`spb` a.k.a. "sleuthpaste" is the only totally secure, auditable, entirely open-source pastebin.
-
-## How to run
-
-You can run this as several static files or a single static file.
-
-### Multiple static files
-
-Serve the source directory anywhere. A server is included, which requires only node: `spb [port]` (default: 80).
-
-### A single static file
-
-To run it statically, first get the lxml python package (2 or 3, it doesn't matter) with your package manager or with pip, then `make`. This creates a single file `static.html` with page javascript and CSS embedded. Host that wherever; maybe even as a paste!
-
-<hr />
-
-## Inspiration
-
-Quint was working on a project that needed short-term self-deleting symmetrically encrypted storage for small blobs of text, but no open-source pastebin lets users encrypt their pastes with a passphrase, and the [only](https://www.protectedtext.com/) pastebin with any sort of encryption is closed source and comes with several security caveats that can downgrade end users' security unexpectedly. We both use a popular pastebin called `pb` (hosted at [ptpb.pw](https://ptpb.pw)) and felt its API was well-designed enough to extend to symmetric encryption.
-
-## What it does
-
-`spb` is a fork of `pb` that encrypts text entirely client-side in the browser. Because of the way its design integrates with `pb`, it inherits many of `pb`'s benefits, including:
+spb is a fork of [pbwww](https://github.com/sudokode/pbwww) that encrypts text entirely client-side in the browser and posts the encrypted text to [ptpb.pw](https://ptpb.pw). It also decrypts those encrypted pastes. Because of the way its design integrates with pb, it inherits many of pb's benefits, including:
 
   - deleting pastes
-  - setting per-paste automatic deletion
-  - vanity URLs to double as a URL-shortener of sorts
-  - extensible API
+  - setting per-paste automatic deletion timers, called "expiration" or "sunsets"
+  - decrypt text from arbitrary URLs, as long as our method was used to encrypt
   - integration with existing tools
 
-An instance is hosted at [sptpb.pw](http://sptpb.pw/).
+An instance is hosted at [sptpb.pw](https://sptpb.pw/) or [sleuthpaste.com](https://sleuthpaste.com) or [paste.guvernator.net](https://paste.guvernator.net).
 
-## How we built it
+## example
 
-Ed wrote a node.js backend server and a wrapper around crypto.js, an in-browser Javascript crypto library, for both the browser (as a script loaded by the paste submission form) and the command-line (as a composable unix utility), both running the same auditable (hashable, signable, ...) code.
+1. Go to [this example encrypted paste](https://sptpb.pw/?wcqg)
+2. Once the page is loaded but before you type a password, disable internet access.
+3. Enter the password&mdash;which is **truth**&mdash;and see that the text is decrypted.
 
-Quint forked [pbwww](https://github.com/sudokode/pbwww) (running instance [here](https://ptpb.pw/f)) to add symmetric encryption to the submission form, removing features that were incompatible with the level of encryption provided; this provided the front-end.
+## run
 
-## Challenges we ran into / What we learned
+It's a static site. You can host it as-is on any static host.
 
-- javascript is crucially *not* a well-specified language with well-specified behavior
-- browser javascript is crucially *not* server javascript
-- severe sleep deprivation
-- turns out W&M's DNS servers cache for a very long time
-- node can act as a very flexible Flask replacement, but only if you like callbacks
-- Flask can act as a very flexible node replacement, but only if you like decorators
-- competition with a systems programming assignment
+Alternatively, run `make` to compile the form as a single-page site (`static.html`). You need python (2 or 3) and lxml to generate `static.html`. You'll still need to host or link the favicons at `image/sptpb-*.png` and the about page at `about.html`.
 
-## Accomplishments that we're proud of
+## why
 
-We're the only open-source encrypted pastebin on the internet. It filled a very concrete need for a real project that I will be using as early as this week.
+[@qguv](https://github.com/qguv) was working on a project that needed short-term self-deleting symmetrically encrypted storage for small blobs of text, but no open-source pastebin lets users encrypt their pastes with a passphrase, and the [only](https://www.protectedtext.com/) pastebin with any sort of encryption is closed source and comes with several security caveats that can downgrade end users' security unexpectedly. We both use a popular pastebin called `pb` (hosted at [ptpb.pw](https://ptpb.pw)) and felt its API was well-designed enough to extend to symmetric encryption.
 
-## What's next for spb
+## todo
 
-Even tighter integration with `pb` and support for arbitrary binary blobs (a much harder task because of the inability to use HTTP to send large files through an encrypting stream).
+- [X] reformat as patchset atop pbwww
+- [X] https for ptpb.pw, sleuthpaste.com, and paste.guvernator.net
+- [ ] automatic ssl cert renewal
+- [ ] allow user to request a 4-character URL
+- [ ] allow reading from any text on the web
+- [ ] allow posting to any instance of pb (not just ptpb.pw)
+- [ ] allow posting to other pastebin providers
