@@ -153,6 +153,8 @@ var WWW = (function(undefined) {
 
         $('input').val('');
         $('textarea').val('');
+        $(':checkbox').parent()
+            .removeClass('active');
 
         $('#content').removeClass('hidden').removeClass('blurry-text');
         $('#filename').addClass('hidden');
@@ -224,8 +226,15 @@ var WWW = (function(undefined) {
         if (content_only == true)
             return fd;
 
-        /* always use private pastes */
-        fd.append('private', 1);
+        $('.api-input:checkbox').each(function() {
+            var value = $(this).attr('data-payload'),
+                name = $(this).attr('name'),
+                checked = $(this).is(':checked'),
+                inverted = $(this).hasClass('invert-meaning');
+
+            if (checked != inverted)
+                fd.append(name, value);
+        })
 
         $('.api-input:text:enabled').each(function() {
             var value = $(this).val(),
@@ -427,6 +436,8 @@ $(function() {
     });
 
     $('#swap').click(app.swap_sunset);
+
+    $('[data-toggle="tooltip"]').tooltip();
 
     app.init();
 

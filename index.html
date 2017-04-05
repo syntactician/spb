@@ -29,7 +29,7 @@
   </head>
   <body>
     <div id="stash" class="hidden" aria-hidden="true">
-      <div class="alert alert-info fade in" role="alert">
+      <div class="alert alert-dismissible alert-info fade in" role="alert">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
       </div>
     </div>
@@ -65,26 +65,19 @@
           </div>
         </div>
 
-        <div class="row form-inline form-group">
-          <div class="col-xs-9 col-sm-6">
-            <div class="input-group">
-              <input id="password" type="password" class="form-control" placeholder="password" disabled="disabled">
-              <div class="input-group-btn">
-                <button id="paste" type="submit" class="btn btn-primary btn-block invert-disable disabled" data-method="post" disabled="disabled">
-                  Paste
-                  <span class="fa fa-spin fa-spinner hidden"></span>
-                </button>
+        <div class="row">
+          <div class="col-xs-9 col-md-6">
+            <div class="form-group">
+              <div class="input-group">
+                <input id="password" type="password" class="form-control" placeholder="password" disabled="disabled">
+                <div class="input-group-btn">
+                  <button id="paste" type="submit" class="btn btn-primary btn-block invert-disable disabled" data-method="post" disabled="disabled">
+                    Paste
+                    <span class="fa fa-spin fa-spinner hidden"></span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="col-xs-3 col-sm-2 col-sm-offset-4 col-lg-1 col-lg-offset-5 text-right">
-            <button id="clear" type="reset" class="btn btn-default btn-block">Clear</button>
-          </div>
-        </div>
-
-        <div class="row form-inline form-group">
-          <div class="col-xs-6 col-sm-6 col-sm-push-6 form-group">
             <div class="form-group">
               <label for="sunset" class="sr-only">Expires</label>
               <div class="input-group" id="sunset">
@@ -96,16 +89,26 @@
                 </span>
               </div>
             </div>
-            <div class="form-group">
-              <label for="label" class="sr-only">Label</label>
-              <input type="text" id="label" class="form-control" placeholder="Label" disabled="disabled">
-            </div>
           </div>
 
-          <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
+          <div class="col-xs-3 col-md-2 col-md-offset-4 text-right">
+            <div class="form-group">
+              <div class="btn-group btn-block">
+                <input id="private" name="private" class="api-input invert-meaning hidden" type="checkbox" data-payload="1" value="1">
+                <label for="private" class="btn btn-default btn-block" data-toggle="tooltip" data-placement="top" title="Short URLs are nice but easier to guess.">Short</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <button id="clear" type="reset" class="btn btn-default btn-block">Clear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-xs-12 col-sm-6">
             <div class="form-group">
               <div class="input-group">
-                <input id="pasteid" class="form-control" placeholder="paste ID" disabled="disabled">
+                <input type="text" id="pasteid" class="form-control" placeholder="paste ID" disabled="disabled">
                 <div class="input-group-btn">
                   <button id="load" type="submit" class="btn btn-default" data-uri="#pasteid" disabled="disabled">Load
                     <span class="fa fa-spin fa-spinner hidden"></span>
@@ -115,10 +118,10 @@
             </div>
           </div>
 
-          <div class="col-xs-12 col-sm-6 col-sm-pull-6 form-inline form-group">
+          <div class="col-xs-12 col-sm-6">
             <div class="form-group">
               <div class="input-group">
-                <input id="uuid" class="form-control" placeholder="paste UUID" disabled="disabled">
+                <input type="text" id="uuid" class="form-control" placeholder="paste UUID" disabled="disabled">
                 <div class="input-group-btn">
                   <button id="update" type="submit" class="btn btn-default" data-uri="#uuid" data-method="put" disabled="disabled">
                     Update
@@ -134,14 +137,14 @@
               </div>
             </div>
           </div>
-        </form>
-      </div>
-
-      <footer class="footer">
-        <div class="container">
-          <p class="text-muted text-center small">Send all complaints to <a href="https://github.com/syntactician/spb/issues" target="_blank">syntactician & qguv</a></p>
         </div>
-      </footer>
+      </form>
     </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted text-center small">Send all complaints to <a href="//github.com/syntactician/spb/issues" target="_blank">syntactician & qguv</a></p>
+      </div>
+    </footer>
   </body>
 </html>
