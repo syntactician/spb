@@ -52,36 +52,36 @@
             </p>
           </div>
         </div>
-
-        <form id="paste-form" enctype="multipart/form-data" method="POST" action="/">
+      </div>
+      <form id="paste-form" enctype="multipart/form-data" method="POST" action="/">
+        <div class="row">
           <div id="alert-col" class="col-sm-12">
 
           </div>
           <div class="col-sm-12 form-group">
             <textarea id="content" name="content" class="form-control paste-content" autofocus="autofocus"></textarea>
           </div>
+        </div>
 
-          <div class="col-xs-6 col-sm-6 form-inline form-group">
-            <div class="form-group">
-              <div class="input-group">
-                <input id="password" type="password" class="form-control" placeholder="password" disabled="disabled">
-                <div class="input-group-btn">
-              <button id="paste" type="submit" class="btn btn-primary btn-block invert-disable disabled" data-method="post" disabled="disabled">
-                Paste
-                <span class="fa fa-spin fa-spinner hidden"></span>
-              </button>
-                </div>
+        <div class="row form-inline form-group">
+          <div class="col-xs-9 col-sm-6">
+            <div class="input-group">
+              <input id="password" type="password" class="form-control" placeholder="password" disabled="disabled">
+              <div class="input-group-btn">
+                <button id="paste" type="submit" class="btn btn-primary btn-block invert-disable disabled" data-method="post" disabled="disabled">
+                  Paste
+                  <span class="fa fa-spin fa-spinner hidden"></span>
+                </button>
               </div>
             </div>
-
           </div>
 
-          <div class="col-xs-6 col-sm-6 form-inline form-group text-right">
-            <div class="form-group">
-              <button id="clear" type="reset" class="btn btn-default btn-block">Clear</button>
-            </div>
+          <div class="col-xs-3 col-sm-2 col-sm-offset-4 col-lg-1 col-lg-offset-5 text-right">
+            <button id="clear" type="reset" class="btn btn-default btn-block">Clear</button>
           </div>
+        </div>
 
+        <div class="row form-inline form-group">
           <div class="col-xs-6 col-sm-6 col-sm-push-6 form-group">
             <div class="form-group">
               <label for="sunset" class="sr-only">Expires</label>
