@@ -11,7 +11,7 @@ spb is a fork of [pbwww](https://github.com/sudokode/pbwww) that encrypts text e
   - decrypt text from arbitrary URLs, as long as our method was used to encrypt
   - integration with existing tools
 
-An instance is hosted at [sptpb.pw](https://sptpb.pw/) or [sleuthpaste.com](https://sleuthpaste.com) or [paste.guvernator.net](https://paste.guvernator.net).
+An instance is hosted at [sptpb.pw](https://sptpb.pw/) or [paste.guvernator.net](https://paste.guvernator.net). They are mirrors; things pasted to one will show up in the other.
 
 ## example
 
@@ -32,7 +32,7 @@ Alternatively, run `make` to compile the form as a single-page site (`static.htm
 ## todo
 
 - [X] reformat as patchset atop pbwww
-- [X] https for ptpb.pw, sleuthpaste.com, and paste.guvernator.net
+- [X] https for ptpb.pw and paste.guvernator.net
 - [ ] automatic ssl cert renewal
 - [ ] allow user to request a 4-character URL
 - [ ] allow reading from any text on the web
